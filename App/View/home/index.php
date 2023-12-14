@@ -42,7 +42,11 @@ echo $data['header'];
                             <p class="card-text"><?= $product['origin'] ?></p>
                             <p class="card-text"><?= $product['flavor_notes'] ?></p>
                             <p class="card-text"><?= $product['product_price'] ?>₺</p>
-                            <button onclick="sepeteEkle(<?= $product['id'] ?>)"  class="btn btn-danger btn-block sepete-ekle">Sepete ekle</button>
+                            <?php if ($product['stock_quantity'] <= 0): ?>
+                                <button disabled class="btn btn-secondary btn-block sepete-ekle">Stokta Yok</button>
+                            <?php else: ?>
+                                <button onclick="sepeteEkle(<?= $product['id'] ?>)"  class="btn btn-danger btn-block sepete-ekle">Sepete ekle</button>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -78,6 +82,72 @@ echo $data['header'];
         axios.post('<?= _link('addToCart') ?>', formData)
             .then(res => {
                 toastr[res.data.status](res.data.title, res.data.msg)
+
+                if (res.data.status == "success"){
+                    var cartContainer = document.getElementById("cartContainer");
+                    var quantityBadge = document.getElementById("urunSayisi");
+
+                    var totalQuantity = 0;
+
+                    cartContainer.innerHTML = "";
+
+                    res.data.cart.forEach(product=> {
+
+                        var productLink = document.createElement("a");
+                        productLink.href = "#";
+                        productLink.className = "dropdown-item";
+
+                        var itemDiv = document.createElement("div");
+                        itemDiv.className = "media";
+
+                        var imgElement = document.createElement("img");
+                        imgElement.src = "https://picsum.photos/id/63/100/100";
+                        imgElement.className = "img-size-50 mr-3 img-circle";
+
+                        var mediaBodyDiv = document.createElement("div");
+                        mediaBodyDiv.className = "media-body";
+
+                        var titleElement = document.createElement("h3");
+                        titleElement.className = "dropdown-item-title";
+                        titleElement.innerHTML = product.title + '<span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>';
+
+                        var descriptionElement = document.createElement("p");
+                        descriptionElement.className = "text-sm";
+                        descriptionElement.innerHTML = product.description;
+
+                        var quantityElement = document.createElement("p");
+                        quantityElement.className = "text-sm text-muted";
+                        quantityElement.innerHTML = '<i class="far fa-clock mr-1"></i> Adet: ' + product.quantity;
+
+                        mediaBodyDiv.appendChild(titleElement);
+                        mediaBodyDiv.appendChild(descriptionElement);
+                        mediaBodyDiv.appendChild(quantityElement);
+
+                        itemDiv.appendChild(imgElement);
+                        itemDiv.appendChild(mediaBodyDiv);
+
+                        productLink.appendChild(itemDiv);
+
+
+                        totalQuantity += product.quantity;
+
+                        // Append the product link and a divider to the cart container
+                        cartContainer.appendChild(productLink);
+
+                        var divider = document.createElement("div");
+                        divider.className = "dropdown-divider";
+                        cartContainer.appendChild(divider);
+
+                    })
+
+                    var orderViewButton = document.createElement("a");
+                    orderViewButton.href = "#";
+                    orderViewButton.className = "dropdown-item dropdown-footer";
+                    orderViewButton.innerHTML = "SİPARİŞİ GÖRÜNTÜLE";
+
+                    cartContainer.appendChild(orderViewButton);                }
+                    quantityBadge.textContent = totalQuantity;
+
             }).catch(err => {
             console.log(err)
         })

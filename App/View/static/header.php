@@ -15,5 +15,5 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="<?= asset('plugins/fontawesome-free/css/all.min.css') ?>">
     <!-- Theme style -->
     <link rel="stylesheet" href="<?= asset('css/adminlte.min.css') ?>">
-
+    <link rel="stylesheet" href="<?= asset('plugins/toastr/toastr.min.css') ?>">
 </head>

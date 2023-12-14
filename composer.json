@@ -1,0 +1,23 @@
+{
+    "name": "melih/ecommerce-app",
+    "autoload": {
+        "psr-4": {
+            "App\\": "./App",
+            "Core\\": "./Core"
+        },
+        "files": [
+            "App/Helpers/app.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Svobodennn",
+            "email": "melih.sarac@hotmail.com"
+        }
+    ],
+    "require": {
+        "bramus/router": "~1.6",
+      "ext-json": "*",
+      "ext-pdo": "*"
+    }
+}

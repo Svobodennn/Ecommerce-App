@@ -14,6 +14,7 @@ class Home extends BaseController
 
         $data['navbar'] = $this->view->load('static/navbar');
         $data['sidebar'] = $this->view->load('static/sidebar');
+        $data['header'] = $this->view->load('static/header');
         echo $this->view->load('home/index',compact('data')); // ['data' => $data]
     }
 }

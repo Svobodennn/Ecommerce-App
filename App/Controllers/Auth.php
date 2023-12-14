@@ -5,7 +5,10 @@ namespace App\Controllers;
 
 use App\Model\ModelAuth;
 use Core\BaseController;
+use Core\Migration;
+use Core\Seeder;
 use Core\Session;
+use function mysql_xdevapi\getSession;
 
 class Auth extends BaseController
 {

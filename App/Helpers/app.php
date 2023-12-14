@@ -13,9 +13,13 @@ function _link($url = null) {
 function _session($name){
     return \Core\Session::getSession($name);
 }
+function _sessionSet($name,$value){
+    \Core\Session::setSession($name,$value);
+}
 
 function debug($data){
     echo "<pre style='width: 100%; height: 100%; background: #0a0e14; color: limegreen; z-index: 9999'>";
    print_r($data);
     echo "</pre>";
 }
+

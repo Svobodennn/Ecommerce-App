@@ -1,9 +1,9 @@
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="<?= _link() ?>" class="brand-link">
         <i class="fa fa-users"></i>
-        <span class="brand-text font-weight-light">CMS Project</span>
+        <span class="brand-text font-weight-light">Ecommerce App</span>
     </a>
 
     <!-- Sidebar -->
@@ -25,55 +25,17 @@
                     <a href="<?= _link() ?>" class="nav-link">
                         <i class="nav-icon fas fa-chart-line"></i>
                         <p>
-                            Dashboard
+                            Anasayfa
                         </p>
                     </a>
-                </li>
-                <li class="nav-item menu-open">
-                    <a href="#" class="nav-link active">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>
-                            Customers
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="<?= _link('customer/add') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add Customer</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= _link('customer') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Customers</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <a href="<?= _link('orders') ?>" class="nav-link">
+                        <i class="nav-icon fas fa-chart-line"></i>
                         <p>
-                            Projects
-                            <i class="right fas fa-angle-left"></i>
+                            Siparişlerim
                         </p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="<?= _link('project/add') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add Project</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= _link('project') ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Projects</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
             </ul>
         </nav>

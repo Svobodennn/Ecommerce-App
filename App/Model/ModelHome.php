@@ -15,6 +15,7 @@ class ModelHome extends BaseModel
                     p.title AS product_title,
                     p.description AS product_description,
                     p.price AS product_price,
+                    p.stock_quantity AS stock_quantity,
                     c.title AS category_title,
                     o.title AS origin,
                     r.title as roast_level,
@@ -37,8 +38,25 @@ class ModelHome extends BaseModel
         return $data;
     }
 
+    public function getProduct($data){
+        extract($data);
+
+        $result = $this->db->query("SELECT * FROM products WHERE id = $id");
+        return $result ? $result : false;
+    }
+
+    public function getStock($id){
+        $result = $this->db->query("SELECT stock_quantity FROM products WHERE id = $id");
+
+        return $result ? $result['stock_quantity'] : 0;
+    }
     public function addToCart($data){
         extract($data);
+        $stock = $this->getStock($id);
+
+        if ($stock <= 0) {
+            return false;
+        }
 
         if (isset($id)){
             // var olan cookieyi ekliyoruz yoksa baştan oluşturuyoruz
@@ -54,5 +72,24 @@ class ModelHome extends BaseModel
         } else {
             return false;
         }
+    }
+
+    public function getCartList(){
+        $cart = $_COOKIE['cart'];
+        $cartDetails = [];
+
+        foreach (json_decode($cart, true) as $productId => $quantity) {
+            // id ye göre veritabanından ürün detaylarını alma
+            $productDetails = $this->getProduct(['id' => $productId]);
+            // ürün detaylarının ve toplam sayının dönüşe eklenmesi
+            $cartDetails[] = [
+                'id' => $productId,
+                'title' => $productDetails['title'],
+                'description' => $productDetails['description'],
+                'quantity' => $quantity
+            ];
+        }
+
+        return $cartDetails;
     }
 }

@@ -216,7 +216,7 @@ class Seeder
         foreach ($products as $product) {
             // Check if the product exists
             $productExists = $this->recordExists('products', 'id', $product['product_id']);
-            if ($productExists) {
+            if (!$productExists) {
                 // If the product doesn't exist, you may want to handle this case (throw an exception, log, etc.)
                 continue;
             }

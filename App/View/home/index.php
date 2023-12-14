@@ -1,6 +1,8 @@
 <?php
 _sessionSet('title', 'Ecommerce App');
-echo $data['header']
+echo $data['header'];
+
+//debug($data['products']);
 ?>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -28,19 +30,22 @@ echo $data['header']
         <!-- Main content -->
         <div class="content">
             <div class="container-fluid">
-                <div class="d-flex flex flex-wrap justify-content-between">
+                <div class="d-flex flex flex-wrap">
                     <!--Ürünler-->
-                    <div class="card w-5">
-                        <img class="card-img-top img-thumbnail rounded text-center" src="https://picsum.photos/id/63/200/300" alt="Card image cap">
+                    <?php foreach ($data['products'] as $product): ?>
+                    <div style="width: 20rem" class="card">
+                        <img class="card-img-top img-thumbnail img-fluid rounded text-center" src="https://picsum.photos/id/63/400/400" alt="Card image cap">
                         <div class="card-body">
-                            <h5 class="card-title">ÜRÜN ADI</h5>
-                            <p class="card-text">AÇIKLAMASI</p>
-                            <p class="card-text">ORİGİNİ</p>
-                            <p class="card-text">ROAST LEVELİ</p>
-                            <p class="card-text">FLAVORS</p>
-                            <p class="card-text"><button class="btn btn-danger sepete-ekle">Sepete ekle</button></p>
+                            <h4 class="card-title badge badge-danger "><?= $product['product_title'] ?></h4>
+                            <p class="card-text"><?= $product['product_description'] ?></p>
+                            <p class="card-text"><?= $product['roast_level'] ?></p>
+                            <p class="card-text"><?= $product['origin'] ?></p>
+                            <p class="card-text"><?= $product['flavor_notes'] ?></p>
+                            <p class="card-text"><?= $product['product_price'] ?>₺</p>
+                            <button onclick="sepeteEkle(<?= $product['id'] ?>)"  class="btn btn-danger btn-block sepete-ekle">Sepete ekle</button>
                         </div>
                     </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -61,24 +66,22 @@ echo $data['header']
     <!-- /.control-sidebar -->
 
     <!-- Main Footer -->
-    <footer class="main-footer">
-        <!-- To the right -->
-        <div class="float-right d-none d-sm-inline">
-            Anything you want
-        </div>
-        <!-- Default to the left -->
-        <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
-    </footer>
-</div>
-<!-- ./wrapper -->
+    <?= $data['footer'] ?>
 
-<!-- REQUIRED SCRIPTS -->
+<script>
+    function sepeteEkle(product_id){
+        let id = product_id;
 
-<!-- jQuery -->
-<script src="<?= asset('plugins/jquery/jquery.min.js') ?>"></script>
-<!-- Bootstrap 4 -->
-<script src="<?= asset('plugins/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
-<!-- AdminLTE App -->
-<script src="<?= asset('js/adminlte.min.js') ?>"></script>
+        let formData = new FormData();
+        formData.append('id', id);
+
+        axios.post('<?= _link('addToCart') ?>', formData)
+            .then(res => {
+                toastr[res.data.status](res.data.title, res.data.msg)
+            }).catch(err => {
+            console.log(err)
+        })
+    }
+</script>
 </body>
 </html>

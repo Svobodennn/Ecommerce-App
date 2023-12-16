@@ -22,7 +22,8 @@ class Migration
         $this->createOrdersTable();
         $this->createCouponsTable();
         $this->createProductFlavorNotesTable();
-        // Add more migration methods for other tables as needed
+        $this->createProductOrders();
+        // Gerektiğinde migration ekleyin
     }
 
     private function createMigrationCheckTable()
@@ -143,9 +144,9 @@ class Migration
             )
         ");
     }
-    private function createProductsOrders(){
+    private function createProductOrders(){
         $this->db->exec("
-            CREATE TABLE IF NOT EXISTS products_orders (
+            CREATE TABLE IF NOT EXISTS product_orders (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 product_id INT NOT NULL,
                 order_id INT NOT NULL,
@@ -156,5 +157,5 @@ class Migration
         ");
     }
 
-    // Add more migration methods for other tables as needed
+    // gerektiğinde tablo ekleyin
 }

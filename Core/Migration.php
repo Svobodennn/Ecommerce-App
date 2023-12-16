@@ -127,9 +127,9 @@ class Migration
             user_id INT NOT NULL,
             created_date DATETIME NOT NULL,
             status enum('a', 'p') NOT NULL DEFAULT 'a',
-            summary DECIMAL(9,2) NOT NULL,
+            total DECIMAL(9,2) NOT NULL,
             coupon_id INT,
-            total DECIMAL(9,2) NOT NULL
+            summary DECIMAL(9,2) NOT NULL
         )
     ");
     }
@@ -140,6 +140,18 @@ class Migration
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(13) NOT NULL,
                 status enum('a','p') NOT NULL DEFAULT 'a'
+            )
+        ");
+    }
+    private function createProductsOrders(){
+        $this->db->exec("
+            CREATE TABLE IF NOT EXISTS products_orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                product_id INT NOT NULL,
+                order_id INT NOT NULL,
+                quantity INT NOT NULL,
+                FOREIGN KEY (product_id) REFERENCES products(id),
+                FOREIGN KEY (order_id) REFERENCES orders(id)
             )
         ");
     }

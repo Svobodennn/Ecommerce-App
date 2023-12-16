@@ -60,14 +60,22 @@ class ModelHome extends BaseModel
 
         if (isset($id)){
             // var olan cookieyi ekliyoruz yoksa baştan oluşturuyoruz
-            $cart = json_decode($_COOKIE['cart'], true) ?? [];
+            if (isset($_COOKIE['cart'])){
+                $cart = json_decode($_COOKIE['cart'], true);
+            } else {
+                $cart = [];
+            }
+
 
             // yeni ürünü sepete ekle
             $cart[$id] = isset($cart[$id]) ? $cart[$id] + 1 : 1;
 
+            // anında erişebilmek için session'a atıyoruz
+            $_SESSION['cart'] = $cart;
+
+
             // httponly true yaparak xss açıklarına karşı önlem alıyoruz
             setcookie('cart', json_encode($cart), time() + (86400 * 5), "/", '', true, true); // 5 gün süreyle geçerli bir cookie
-
             return true;
         } else {
             return false;
@@ -75,21 +83,42 @@ class ModelHome extends BaseModel
     }
 
     public function getCartList(){
-        $cart = $_COOKIE['cart'];
-        $cartDetails = [];
 
-        foreach (json_decode($cart, true) as $productId => $quantity) {
-            // id ye göre veritabanından ürün detaylarını alma
-            $productDetails = $this->getProduct(['id' => $productId]);
-            // ürün detaylarının ve toplam sayının dönüşe eklenmesi
-            $cartDetails[] = [
-                'id' => $productId,
-                'title' => $productDetails['title'],
-                'description' => $productDetails['description'],
-                'quantity' => $quantity
-            ];
+        if (isset($_COOKIE['cart'])){
+            $cart = $_COOKIE['cart'];
+            $cartDetails = [];
+
+            foreach (json_decode($cart, true) as $productId => $quantity) {
+                // id ye göre veritabanından ürün detaylarını alma
+                $productDetails = $this->getProduct(['id' => $productId]);
+                // ürün detaylarının ve toplam sayının dönüşe eklenmesi
+                $cartDetails[] = [
+                    'id' => $productId,
+                    'title' => $productDetails['title'],
+                    'description' => $productDetails['description'],
+                    'quantity' => $quantity
+                ];
+            }
+            return $cartDetails;
         }
 
-        return $cartDetails;
+//        if (isset($_SESSION['cart'])){
+//            $cart = $_SESSION['cart'];
+//            $cartDetails = [];
+//
+//            foreach ($cart as $productId => $quantity) {
+//                // id ye göre veritabanından ürün detaylarını alma
+//                $productDetails = $this->getProduct(['id' => $productId]);
+//                // ürün detaylarının ve toplam sayının dönüşe eklenmesi
+//                $cartDetails[] = [
+//                    'id' => $productId,
+//                    'title' => $productDetails['title'],
+//                    'description' => $productDetails['description'],
+//                    'quantity' => $quantity
+//                ];
+//            }
+//
+//            return $cartDetails;
+//        }
     }
 }

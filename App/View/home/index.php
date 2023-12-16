@@ -15,11 +15,11 @@ echo $data['header'];
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Dashboard</h1>
+                        <h1 class="m-0"><?= _session('title') ?></h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="#"><?= _session('title') ?></a></li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -141,7 +141,7 @@ echo $data['header'];
                     })
 
                     var orderViewButton = document.createElement("a");
-                    orderViewButton.href = "#";
+                    orderViewButton.href = "<?= _link('order') ?>";
                     orderViewButton.className = "dropdown-item dropdown-footer";
                     orderViewButton.innerHTML = "SİPARİŞİ GÖRÜNTÜLE";
 

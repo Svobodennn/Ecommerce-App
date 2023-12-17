@@ -192,7 +192,30 @@ foreach ($generatedCoupons as $coupon) {
 
                     if (res.status === "success") {
 
-                        toastr[res.status](res.title, res.msg)
+                        let timerInterval;
+                        Swal.fire({
+                            title: res.title,
+                            html: res.msg,
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                const timer = Swal.getPopup().querySelector("b");
+                                timerInterval = setInterval(() => {
+                                    timer.textContent = `${Swal.getTimerLeft()}`;
+                                }, 100);
+                            },
+                            willClose: () => {
+                                clearInterval(timerInterval);
+                            }
+                        }).then((result) => {
+                            /* Read more about handling dismissals below */
+                            if (result.dismiss === Swal.DismissReason.timer) {
+                                window.location.href = res.redirect
+                            }
+                        });
+
 
 
                     } else {
@@ -212,6 +235,7 @@ foreach ($generatedCoupons as $coupon) {
 
         function checkCargo(){
             let total_price = parseFloat($('#total_price').text())
+
             let cargo = $('#cargo')
             let cargo_price = 0
 
@@ -234,12 +258,12 @@ foreach ($generatedCoupons as $coupon) {
             }
         }
 
-        function summary(total_price, cargo_price = 0, discount = false){
+        function summary(totalPrice, cargo_price = 0, discount = false){
             let summary_element = $('#summary')
+            var total_price = parseFloat(totalPrice)
 
             if (!discount){
-            summary_element.text(total_price+cargo_price)
-                console.log('!discount')
+            summary_element.text((total_price+cargo_price).toFixed(2))
             } else {
                 if (total_price > 3000){
                     let percantage = 25;

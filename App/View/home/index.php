@@ -1,5 +1,5 @@
 <?php
-_sessionSet('title', 'Ecommerce App');
+_sessionSet('title', 'Kahve Dükkanı | Anasayfa');
 echo $data['header'];
 
 //debug($data['products']);
@@ -141,7 +141,7 @@ echo $data['header'];
                     })
 
                     var orderViewButton = document.createElement("a");
-                    orderViewButton.href = "<?= _link('order') ?>";
+                    orderViewButton.href = "<?= _link('cart') ?>";
                     orderViewButton.className = "dropdown-item dropdown-footer";
                     orderViewButton.innerHTML = "SİPARİŞİ GÖRÜNTÜLE";
 

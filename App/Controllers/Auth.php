@@ -55,6 +55,8 @@ class Auth extends BaseController
     }
     public function Logout(){
         Session::removeSession();
+        unset($_COOKIE['cart']);
+        setcookie('cart', '', time() - 3600, '/');
         redirect('login');
     }
 

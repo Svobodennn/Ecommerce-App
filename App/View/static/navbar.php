@@ -52,7 +52,7 @@
                         <?php
                         if (isset($cartList)):
                             ?>
-                            <a href="<?= _link('order') ?>" class="dropdown-item dropdown-footer">SİPARİŞİ GÖRÜNTÜLE</a>
+                            <a href="<?= _link('cart') ?>" class="dropdown-item dropdown-footer">SİPARİŞİ GÖRÜNTÜLE</a>
                         <?php
                         else:
                             ?>

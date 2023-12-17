@@ -3,18 +3,18 @@
 namespace App\Controllers;
 
 
-use App\Model\ModelOrder;
+use App\Model\ModelCart;
 use Core\BaseController;
 use Core\Request;
 
-class Order extends BaseController
+class Cart extends BaseController
 {
     public function Index()
     {
         // Sayfa yüklendiğinde güvenlik önlemi olarak kuponu sıfırlıyoruz
         _sessionSet('coupon', NULL);
 
-        $model = new ModelOrder();
+        $model = new ModelCart();
 
         $data['cartList'] = $model->getCartList();
 
@@ -22,13 +22,13 @@ class Order extends BaseController
         $data['sidebar'] = $this->view->load('static/sidebar');
         $data['header'] = $this->view->load('static/header');
         $data['footer'] = $this->view->load('static/footer');
-        echo $this->view->load('order/index', compact('data')); // ['data' => $data]
+        echo $this->view->load('cart/index', compact('data')); // ['data' => $data]
     }
 
     public function AddToCart()
     {
         $data = $this->request->post();
-        $model = new ModelOrder();
+        $model = new ModelCart();
 
         $result = $model->addToCart($data);
         $cartList = $model->getCartList();
@@ -45,7 +45,7 @@ class Order extends BaseController
     {
 
         $data = $this->request->post();
-        $model = new ModelOrder();
+        $model = new ModelCart();
 
         $result = $model->decreaseFromCart($data);
 
@@ -60,7 +60,7 @@ class Order extends BaseController
     public function removeFromCart()
     {
         $data = $this->request->post();
-        $model = new ModelOrder();
+        $model = new ModelCart();
 
         $result = $model->removeFromCart($data);
 
@@ -76,7 +76,7 @@ class Order extends BaseController
     {
         $data = $this->request->post();
 
-        $model = new ModelOrder();
+        $model = new ModelCart();
         $result = $model->checkCoupon($data);
 
         if ($result) {
@@ -90,15 +90,16 @@ class Order extends BaseController
     public function finalizeOrder()
     {
 
-        $model = new ModelOrder();
+        $model = new ModelCart();
         $result = $model->finalizeOrder();
 
         if (isset($result['status'])) {
-            echo json_encode(['status' => 'error', 'title' => "Kupon girmek için sipariş tutarı 1000TL'den fazla olmalıdır.", 'msg' => 'Başarılı', 'redirect' => _link('order')]);
+            echo json_encode(['status' => 'error', 'msg' => "Kupon girmek için sipariş tutarı 1000TL'den fazla olmalıdır.", 'title' => 'Başarılı', 'redirect' => _link('cart')]);
         } elseif ($result) {
-            echo json_encode(['status' => 'success', 'title' => 'Sipariş başarıyla oluşturuldu', 'msg' => 'Başarılı', 'redirect' => _link()]);
+            echo json_encode(['status' => 'success', 'msg' => 'Sipariş başarıyla oluşturuldu', 'title' => 'Başarılı', 'redirect' => _link('user/orders')]);
+            $model->sendMail();
         } else {
-            echo json_encode(['status' => 'error', 'title' => 'Sipariş verilemedi', 'msg' => 'Bir Hata Meydana Geldi']);
+            echo json_encode(['status' => 'error', 'msg' => 'Sipariş verilemedi', 'title' => 'Bir Hata Meydana Geldi']);
         }
     }
 }

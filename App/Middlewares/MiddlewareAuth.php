@@ -18,4 +18,13 @@ class MiddlewareAuth extends BaseMiddleware
             return true;
         }
     }
+
+    public function returnBack(){
+        $login = _session('login');
+
+        if ($login){
+            redirect('');
+        }
+
+    }
 }

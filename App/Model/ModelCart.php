@@ -4,8 +4,11 @@ namespace App\Model;
 
 use Core\BaseModel;
 use Core\Session;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
 
-class ModelOrder extends BaseModel
+class ModelCart extends BaseModel
 {
 // TEK ÜRÜNÜN BİLGİLERİNİ ALMA
     public function getProduct($data)
@@ -164,6 +167,7 @@ class ModelOrder extends BaseModel
 
             // gelen veriyle patternimizi eşleştiriyoruz
             if (preg_match($pattern, $coupon)) {
+                _sessionSet('coupon',$coupon);
                 return true;
             } else {
                 return false;
@@ -182,7 +186,7 @@ class ModelOrder extends BaseModel
             $discountedTotal = $totalPrice - $discountAmount;
             $formattedDiscountedTotal = round($discountedTotal, 2);
 
-            return $formattedDiscountedTotal;
+            return ['bonus_product' => true, 'summary' =>$formattedDiscountedTotal];
 
         } elseif ($totalPrice > 2000) {
             // %20
@@ -222,8 +226,28 @@ class ModelOrder extends BaseModel
     }
 
     // SİPARİŞ OLUŞTURMA
-    public function insertToOrders($userId, $totalPrice, $coupon, $summary)
+    public function insertToOrders($userId, $totalPrice, $coupon, $summary, $bonus_product = 0)
     {
+        $products = $this->getProducts();
+        // eğer 3000tl üzeriyse bonus ürün kazanır
+        if ($bonus_product){
+            for ($i = 0; $i <= sizeof($products); $i++){
+                // ürünler arasından stokta olan bir tane seç
+                if ($products[$i]['stock_quantity'] > 0 ){
+                    $bonus_product = $products[$i]['id'];
+                    break;
+                }
+            }
+            // sayısını 1 eksilt
+            $stmt = $this->db->connect
+                ->prepare("UPDATE products 
+                SET stock_quantity = stock_quantity-1
+                WHERE id = :id");
+
+            $stmt->execute(['id' => $bonus_product]);
+            // ve aşağıdaki queryde idsini yerleştir.
+        }
+
         $stmt = $this->db->connect->prepare('INSERT INTO orders 
                 SET title= :title,
                 user_id= :user_id,
@@ -231,7 +255,8 @@ class ModelOrder extends BaseModel
                 status= :status,
                 total= :total,
                 coupon= :coupon,
-                summary= :summary');
+                summary= :summary,
+                bonus_product= :bonus_product');
 
         $result = $stmt->execute([
             'title' => 'title',
@@ -240,7 +265,8 @@ class ModelOrder extends BaseModel
             'status' => 'a',
             'total' => $totalPrice,
             'coupon' => $coupon,
-            'summary' => $summary
+            'summary' => $summary,
+            'bonus_product' => $bonus_product
         ]);
 
         if ($result) {
@@ -281,9 +307,14 @@ class ModelOrder extends BaseModel
             $summary = $this->getSummary($totalPrice);
 
             // eğer toplam tutar 1000tlden büyükse sipariş oluştur. 1000tlden küçükse hata ver ve sayfaya tekrar yönlendir
-            if ($summary) {
+            if (isset($summary['bonus_product'])){
                 //sipariş oluştur
-                $result = $this->insertToOrders($userId,$totalPrice,$coupon,$summary);
+                $result = $this->insertToOrders($userId,$totalPrice,$coupon,$summary['summary'],true);
+                return $result ?? false;
+            }
+            if (isset($summary['summary'])) {
+                //sipariş oluştur
+                $result = $this->insertToOrders($userId,$totalPrice,$coupon,$summary['summary']);
 
                 return $result ?? false;
             } else {
@@ -326,7 +357,7 @@ class ModelOrder extends BaseModel
             'id' => $id]);
 
         if ($result) {
-            $lastInsertId = $this->db->query('select id from orders where id =(SELECT max(id) FROM orders)');
+            $lastInsertId = $this->db->query('select id from orders where id =(SELECT max(id) FROM orders)'); // where user id= session[id]
 
             $stmt = $this->db->connect
                 ->prepare('INSERT INTO product_orders 
@@ -392,14 +423,14 @@ class ModelOrder extends BaseModel
             } elseif (!$orderPut){
                 return false;
 
-                // order oluşturulmuşsa ürünleri products_order'a koy ve orders ile ilişkilendir
             } else {
+                // order oluşturulmuşsa ürünleri products_order'a koy ve orders ile ilişkilendir
                 foreach ($productsCart as $product) {
                         $result = $this->putProducts($product);
-                        debug($result);
                 }
                 // eğer tüm ürünler başarıyla işlenmişse sepeti boşalt
                 if ($result){
+
                     unset($_COOKIE['cart']);
                     setcookie('cart', '', time() - 3600, '/');
 
@@ -410,4 +441,36 @@ class ModelOrder extends BaseModel
         } else return false;
 
     }
+
+    public function sendMail(){
+
+        $mail = new PHPMailer(true);
+
+        try {
+            //Server settings
+            $mail->SMTPDebug = 0;                      //Enable verbose debug output
+            $mail->isSMTP();                                            //Send using SMTP
+            $mail->Host       = 'smtp-mail.outlook.com';                     //Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+            $mail->CharSet = 'utf-8'; // türkçe karakter
+            $mail->Username   = 'melioducard@hotmail.com';                     //SMTP username
+            $mail->Password   = 'Kertemeyenkele16';                               //SMTP password
+            $mail->SMTPSecure = 'STARTTLS'; //PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+            $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+            //Recipients
+            $mail->setFrom('melioducard@hotmail.com', 'Kahve Dükkanı Siparişiniz alındı');
+            $mail->addAddress(_session('email'), _session('name').' '._session('surname'));     //Add a recipient
+
+            //Content
+            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->Subject = 'Kahve Dükkanı Siparişiniz alındı';
+            $mail->Body    = 'siparişi görüntüle: '.'<a href="'._link('user/orders').'">Tıkla!</a>';
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+            $mail->send();
+        } catch (Exception $e) {
+        }
+    }
+
 }

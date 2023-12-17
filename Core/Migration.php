@@ -130,7 +130,8 @@ class Migration
             status enum('a', 'p') NOT NULL DEFAULT 'a',
             total DECIMAL(9,2) NOT NULL,
             coupon_id INT,
-            summary DECIMAL(9,2) NOT NULL
+            summary DECIMAL(9,2) NOT NULL,
+            bonus_product int
         )
     ");
     }

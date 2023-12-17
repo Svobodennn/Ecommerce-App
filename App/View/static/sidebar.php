@@ -30,7 +30,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="<?= _link('orders') ?>" class="nav-link">
+                    <a href="<?= _link('user/orders') ?>" class="nav-link">
                         <i class="nav-icon fas fa-chart-line"></i>
                         <p>
                             Siparişlerim

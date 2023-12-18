@@ -110,7 +110,7 @@ class Seeder
     {
         $users = [
             ['Melih', 'Saraç', 'melih@example.com', password_hash('123123', PASSWORD_DEFAULT)]
-            // Add more user data as needed
+            // kullanıcı bilgisi ekleyin
         ];
         foreach ($users as $user) {
             // Aynı kullanıcıyı tekrar kaydetmemek için var olup olmadığını kontrol ediyoruz
@@ -131,7 +131,6 @@ class Seeder
         foreach ($origins as $origin){
             $originExists = $this->recordExists('origins','title',$origin['title']);
             if ($originExists) {continue;}
-
 
             $this->db->prepare('INSERT INTO origins (title) VALUES (?) ')
                 ->execute([$origin['title']]);
@@ -164,7 +163,6 @@ class Seeder
 
             if ($flavorNoteExists) {continue;}
 
-
             $this->db->prepare('INSERT INTO flavor_notes (title) VALUES (?) ')
                 ->execute([$flavorNote['title']]);
         }
@@ -193,8 +191,6 @@ class Seeder
             $originId = $this->getIdFromName('origins', 'title', $product['origin']);
             $roastLevelId = $this->getIdFromName('roast_levels', 'title', $product['roast_level']);
 
-//            $price = str_replace('.', ',', $product['price']);
-
             $this->db->prepare('INSERT INTO products (id, title, category_id, description, origin_id, roast_level, stock_quantity, price)
                     VALUES (:id, :title, :category_id, :description, :origin_id, :roast_level, :stock_quantity, :price)')
                 ->execute([
@@ -214,25 +210,26 @@ class Seeder
     private function seedProductFlavorNotes(){
         $products = $this->jsonData;
         foreach ($products as $product) {
-            // Check if the product exists
+            // product un varlığını kontrol et
             $productExists = $this->recordExists('products', 'id', $product['product_id']);
             if (!$productExists) {
-                // If the product doesn't exist, you may want to handle this case (throw an exception, log, etc.)
                 continue;
             }
 
-            // Iterate through flavor notes for the product
+            if (!isset($product['flavor_notes'])){
+                continue;
+            }
+
+            // ürün için flavor noteları tara
             foreach ($product['flavor_notes'] as $flavorNoteTitle) {
-                // Check if the flavor note title is provided in your JSON
+                // jsonda flavor note olup olmadığını kontrol et
                 if (empty($flavorNoteTitle)) {
-                    // Handle the case where flavor note title is missing or empty in your JSON
                     continue;
                 }
 
-                // Get the flavor note ID based on the title from the flavor_notes table
+                // flavor_notes tablosundan flavornoteId yi al
                 $flavorNoteId = $this->getIdFromName('flavor_notes','title',$flavorNoteTitle);
 
-                // Insert into the product_flavor_notes table
                 $this->db->prepare('INSERT INTO product_flavor_notes (product_id, flavor_note_id) VALUES (:product_id, :flavor_note_id)')
                     ->execute([
                         ':product_id' => $product['product_id'],
@@ -249,12 +246,13 @@ class Seeder
 
         foreach ($coupons as $coupon){
 
-            $couponExists = $this->recordExists('coupons','title',$coupon['title']);
+            $couponExists = $this->recordExists('coupons','title',$coupon);
 
             if ($couponExists) {continue;}
 
-            $this->db->prepare('INSERT INTO coupons (title) VALUES (?) ')
-                ->execute([$coupon]);
+            $this->db->prepare('INSERT INTO coupons (title) VALUES (?)')
+             ->execute([$coupon]);
+
         }
     }
 

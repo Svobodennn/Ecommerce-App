@@ -19,6 +19,7 @@ $cms->router->post('/finalizeOrder', 'Controllers\Cart@finalizeOrder');
 // Login Page
 $cms->router->get('/login', 'Controllers\Auth@Index');
 // Auth
+$cms->router->post('/register', 'Controllers\Auth@Register');
 $cms->router->post('/login', 'Controllers\Auth@Login');
 $cms->router->get('/logout', 'Controllers\Auth@Logout');
 

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!--
 This is a starter template page. Use this page to start your new project from
@@ -27,13 +26,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <a href="javascript:void(0)"><b>Kahve</b>Dükkanı</a>
     </div>
     <!-- /.login-logo -->
-    <div class="card">
+    <div id="loginCard" class="card">
         <div class="card-body login-card-body">
             <p class="login-box-msg">Oturum açmak için giriş yapınız</p>
 
             <form action="" id="login" method="post">
                 <div class="input-group mb-3">
-                    <input type="email" id="email" name="email" class="form-control" placeholder="Email">
+                    <input type="email" id="emailLogin" name="email" class="form-control" placeholder="Email"
+                           value="melih@example.com">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-envelope"></span>
@@ -41,7 +41,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </div>
                 </div>
                 <div class="input-group mb-3">
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Şifre">
+                    <input type="password" id="passwordLogin" name="password" class="form-control" placeholder="Şifre"
+                           value="123123">
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-lock"></span>
@@ -51,16 +52,76 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="row">
                     <!-- /.col -->
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                        <button type="button" onclick="login(e)" id="loginBtn" class="btn btn-primary btn-block">Giriş
+                            yap
+                        </button>
                     </div>
+
                     <!-- /.col -->
+                </div>
+                <hr>
+                <div class="text-center">
+                    <a onclick="showRegister()" href="#">Kayıt Ol</a>
                 </div>
             </form>
 
         </div>
         <!-- /.login-card-body -->
     </div>
+
 </div>
+
+<div id="registerCard" class="card o-hidden border-0 shadow-lg my-5">
+    <div class="card-body p-0">
+        <!-- Nested Row within Card Body -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="p-5">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Hesap oluştur</h1>
+                    </div>
+                    <form action="" id="register" method="post" class="user">
+                        <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                <input type="text" class="form-control form-control-user" id="name" name="name"
+                                       placeholder="Ad">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control form-control-user" id="surname" name="surname"
+                                       placeholder="Soyad">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control form-control-user" id="emailRegister"
+                                   name="emailRegister"
+                                   placeholder="Email">
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                <input type="password" class="form-control form-control-user"
+                                       id="passwordRegister" name="passwordRegister" placeholder="Şifre">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control form-control-user"
+                                       id="passwordRepeat" name="passwordRepeat" placeholder="Şifre Tekrar">
+                            </div>
+                        </div>
+                        <button type="button" onclick="register()" id="registerBtn"
+                                class="btn btn-primary btn-user btn-block">
+                            Kayıt Ol
+                        </button>
+
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        <a onclick="showLogin()" class="small" href="#">Hesabın var mı? Giriş yap!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- ./wrapper -->
 
@@ -81,10 +142,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="<?= asset('plugins/sweetalert2/sweetalert2.all.js') ?>"></script>
 
 <script>
-    const login = document.getElementById('login')
-    login.addEventListener('submit', (e) => {
-        let email = document.getElementById('email').value
-        let password = document.getElementById('password').value
+    $(document).ready(function () {
+        $("#registerCard").hide();
+    });
+
+    function showRegister() {
+        $("#loginCard").hide();
+        $("#registerCard").show();
+    }
+
+    function showLogin() {
+        $("#loginCard").show();
+        $("#registerCard").hide();
+    }
+
+
+    function login() {
+
+        let email = document.getElementById('emailLogin').value
+        let password = document.getElementById('passwordLogin').value
 
         let formData = new FormData();
         formData.append('email', email)
@@ -92,7 +168,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         axios.post('', formData)
             .then(res => {
-                if (res.data.redirect){
+                if (res.data.redirect) {
                     window.location.href = res.data.redirect;
                 } else {
                     Swal.fire(
@@ -104,8 +180,60 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }).catch(err => {
             console.log(err)
         })
-        e.preventDefault()
-    })
+    }
+
+    function register() {
+        let name = document.getElementById('name').value
+        let surname = document.getElementById('surname').value
+        let email = document.getElementById('emailRegister').value
+        let password = document.getElementById('passwordRegister').value
+        let passwordRepeat = document.getElementById('passwordRepeat').value
+
+        let formData = new FormData();
+        formData.append('name', name)
+        formData.append('surname', surname)
+        formData.append('emailRegister', email)
+        formData.append('passwordRegister', password)
+        formData.append('passwordRepeat', passwordRepeat)
+
+        axios.post('<?= _link('register') ?>', formData)
+            .then(res => {
+                if (res.data.redirect) {
+                    let timerInterval;
+                    Swal.fire({
+                        title: res.title,
+                        html: res.msg,
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            const timer = Swal.getPopup().querySelector("b");
+                            timerInterval = setInterval(() => {
+                                timer.textContent = `${Swal.getTimerLeft()}`;
+                            }, 100);
+                        },
+                        willClose: () => {
+                            clearInterval(timerInterval);
+                        }
+                    }).then((result) => {
+                        if (result.dismiss === Swal.DismissReason.timer) {
+                            window.location.href = res.redirect
+                        }
+                    });
+
+
+                } else {
+                    Swal.fire(
+                        res.data.title,
+                        res.data.msg,
+                        res.data.status
+                    )
+                })
+            }).catch(err => {
+            console.log(err)
+        })
+    }
 
 </script>
 

@@ -36,6 +36,7 @@ Adresine gidin.
 ## Bilinen hatalar
 
 - Sayfa yenilendiğinde sepete ilk eklenen ürün sepette gözükmüyor (Sadece görsel olarak,cookie'ye ekleniyor.)
+- Çok fazla istek gönderilirse PHP Mailer çalışmıyor.
 
 ## Kullanılan teknolojiler
 
@@ -43,6 +44,7 @@ Adresine gidin.
 - [Sweetalert2](https://github.com/sweetalert2/sweetalert2)
 - [Toastr](https://github.com/CodeSeven/toastr)
 - [JQuery](https://jquery.com/)
+- [PHP Mailer](https://github.com/PHPMailer/PHPMailer)
 - [Tema - AdminLte](https://adminlte.io/)
 
 

@@ -141,7 +141,9 @@ class Migration
             CREATE TABLE IF NOT EXISTS coupons (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(13) NOT NULL,
-                status enum('a','p') NOT NULL DEFAULT 'a'
+                status enum('a','p') NOT NULL DEFAULT 'a',
+                user_id int,
+                FOREIGN KEY (user_id) REFERENCES users(id)
             )
         ");
     }

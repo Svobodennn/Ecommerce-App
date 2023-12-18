@@ -28,8 +28,11 @@ Proje başarıyla clone edildikten sonra bu komutu çalıştırarak gerekli öze
   cd Ecommerce-App
   composer install
 ```
-
-
+Xampp'ı çalıştırdıktan sonra
+```as
+  http://localhost/Ecommerce-App
+```
+Adresine gidin.
 ## Bilinen hatalar
 
 - Sayfa yenilendiğinde sepete ilk eklenen ürün sepette gözükmüyor (Sadece görsel olarak,cookie'ye ekleniyor.)

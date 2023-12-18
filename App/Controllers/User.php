@@ -126,6 +126,11 @@ class User extends BaseController
         $model = new ModelUser();
         $data['details'] = $model->getOrderDetails($id);
 
+        // eğer sessiondaki user id ile orderın sahibi eşleşmezse anasayfaya döner
+        if (!$data['details']){
+            redirect('');
+        }
+
         echo $this->view->load('user/orderDetails',compact('data'));
     }
 

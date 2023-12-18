@@ -161,19 +161,20 @@ class ModelCart extends BaseModel
     {
         extract($data);
 
-        if (strlen($coupon) == 13) {
-            // İki sayı arasında en az 3 adet T harfi bulunacak. Özel karakterler yok
-            $pattern = '/^[a-zA-Z0-9]*\d+T{3,}\d+[a-zA-Z0-9]*$/';
-
-            // gelen veriyle patternimizi eşleştiriyoruz
-            if (preg_match($pattern, $coupon)) {
-                _sessionSet('coupon',$coupon);
-                return true;
-            } else {
-                return false;
-            }
+        // aktif kuponu buluyoruz
+        $stmt = $this->db->connect->prepare('Select title from coupons where title= :title AND status= :status');
+        $couponExists = $stmt->execute([
+            'title' => $coupon,
+            'status' => 'a'
+        ]);
+        // kupon varsa sessiona koyuyoruz
+        if ($couponExists){
+            _sessionSet('coupon',$coupon);
+            return true;
+        } else {
+            return false;
         }
-        return false;
+
     }
 // TOPLAM TUTARA GÖRE İNDİRİM KONTROLLERİ
     public function getSummary($totalPrice)
@@ -303,6 +304,19 @@ class ModelCart extends BaseModel
 
         // kupon varsa gerçekleşecek işlemler
         if ($coupon) {
+
+            // kuponla kullanıcıyı ilişkilendir ve kupon aktifliğini pasif yap
+            $stmt = $this->db->connect->prepare('UPDATE coupons SET user_id= :user_id, status= :status');
+            $continue = $stmt->execute([
+                'user_id' => $userId,
+                'status' => 'p'
+            ]);
+
+            // eğer kupon girme işlemi başarısız olursa hata ver
+            if (!$continue){
+                return false;
+            }
+
             // toplam fiyata göre elde edilecek indirimi hesapla
             $summary = $this->getSummary($totalPrice);
 
@@ -387,6 +401,10 @@ class ModelCart extends BaseModel
         // ve sessiondaki sepet bilgisiyle kontrol edilebilir
         // $product = $this->getProduct(['id' => $cookieItemId])
         $productsDatabase = $this->getProducts();
+
+        if (!$productsCart || !$productsDatabase){
+            return false;
+        }
 
         $productExists = false;
         // her bir ürünü kontrol ediyoruz

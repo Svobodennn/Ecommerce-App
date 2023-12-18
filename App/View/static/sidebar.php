@@ -3,7 +3,7 @@
     <!-- Brand Logo -->
     <a href="<?= _link() ?>" class="brand-link">
         <i class="fa fa-users"></i>
-        <span class="brand-text font-weight-light">Ecommerce App</span>
+        <span class="brand-text font-weight-light">Kahve<b>Dükkanı</b></span>
     </a>
 
     <!-- Sidebar -->

@@ -191,7 +191,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div><!-- /.container-fluid -->
         </section>
         <?php
-                debug($data['details']);
+//                debug($data['details']);
         ?>
         <!-- /.content -->
     </div>

@@ -129,7 +129,7 @@ class Migration
             created_date DATETIME NOT NULL,
             status enum('a', 'p') NOT NULL DEFAULT 'a',
             total DECIMAL(9,2) NOT NULL,
-            coupon_id INT,
+            coupon varchar(13),
             summary DECIMAL(9,2) NOT NULL,
             bonus_product int
         )
@@ -140,7 +140,7 @@ class Migration
         $this->db->exec("
             CREATE TABLE IF NOT EXISTS coupons (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                title VARCHAR(13) NOT NULL,
+                title VARCHAR(13) NOT NULL UNIQUE,
                 status enum('a','p') NOT NULL DEFAULT 'a',
                 user_id int,
                 FOREIGN KEY (user_id) REFERENCES users(id)

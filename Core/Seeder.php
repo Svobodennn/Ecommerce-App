@@ -43,6 +43,7 @@ class Seeder
         $this->seedFlavorNotes();
         $this->seedProducts();
         $this->seedProductFlavorNotes();
+        $this->seedCoupons();
         $this->seedMigrationCheck();
         // Add more seed methods for other tables as needed
     }
@@ -210,7 +211,6 @@ class Seeder
         }
 
     }
-
     private function seedProductFlavorNotes(){
         $products = $this->jsonData;
         foreach ($products as $product) {
@@ -240,6 +240,21 @@ class Seeder
                     ]);
             }
 
+        }
+    }
+
+    private function seedCoupons(){
+        $couponClass = new Coupons();
+        $coupons = $couponClass->generateCoupons(10);
+
+        foreach ($coupons as $coupon){
+
+            $couponExists = $this->recordExists('coupons','title',$coupon['title']);
+
+            if ($couponExists) {continue;}
+
+            $this->db->prepare('INSERT INTO coupons (title) VALUES (?) ')
+                ->execute([$coupon]);
         }
     }
 

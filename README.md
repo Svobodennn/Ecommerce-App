@@ -1,7 +1,7 @@
 
 # Ecommerce Sipariş Yönetimi Projesi
 
-Proje tamamlanmıştır. Projenin kurulumuyla birlikte gerekli veritabanı ve tablolar içlerindeki bilgilerle birlikte oluşturulur.
+Proje tamamlanmıştır. Projenin kurulumuyla birlikte gerekli veritabanı ve tablolar içlerindeki bilgilerle birlikte oluşturulur. Veritabanı kullanıcı adı "root", ve şifresi yoktur.
 
 
 

@@ -94,6 +94,23 @@ _sessionSet('title', 'Kahve Dükkanı | Sipariş Özetini Yazdır');
                         </tr>
                     <?php
                     endforeach;
+
+                    if (isset($data['details'][0]['bonus_product'])):
+
+                        foreach ($data['details'][0]['bonus_product'] as $value):
+                            ?>
+                            <tr class="bg-success">
+                                <td><?= ++$count ?>-</td>
+                                <td><?= $value['product_id'] ?></td>
+                                <td><?= $value['product_title'] ?></td>
+                                <td><?= $value['product_description'] ?></td>
+                                <td>1</td>
+                                <td class="">Hediye</td>
+                            </tr>
+                        <?php
+                        endforeach;
+                    endif;
+
                     ?>
                     </tbody>
                 </table>

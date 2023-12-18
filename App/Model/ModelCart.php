@@ -162,11 +162,14 @@ class ModelCart extends BaseModel
         extract($data);
 
         // aktif kuponu buluyoruz
-        $stmt = $this->db->connect->prepare('Select title from coupons where title= :title AND status= :status');
-        $couponExists = $stmt->execute([
+        $stmt = $this->db->connect->prepare('Select * from coupons where title= :title AND status= :status');
+        $stmt->execute([
             'title' => $coupon,
             'status' => 'a'
         ]);
+
+        $couponExists = $stmt->fetch(\PDO::FETCH_ASSOC);
+
         // kupon varsa sessiona koyuyoruz
         if ($couponExists){
             _sessionSet('coupon',$coupon);
@@ -195,7 +198,7 @@ class ModelCart extends BaseModel
             $discountedTotal = $totalPrice - $discountAmount;
             $formattedDiscountedTotal = round($discountedTotal, 2);
 
-            return $formattedDiscountedTotal;
+            return ['summary' => $formattedDiscountedTotal];
 
         } elseif ($totalPrice > 1500) {
             // %15
@@ -203,7 +206,7 @@ class ModelCart extends BaseModel
             $discountedTotal = $totalPrice - $discountAmount;
             $formattedDiscountedTotal = round($discountedTotal, 2);
 
-            return $formattedDiscountedTotal;
+            return ['summary' => $formattedDiscountedTotal];
 
         } elseif ($totalPrice > 1000) {
             // %10
@@ -211,7 +214,7 @@ class ModelCart extends BaseModel
             $discountedTotal = $totalPrice - $discountAmount;
             $formattedDiscountedTotal = round($discountedTotal, 2);
 
-            return $formattedDiscountedTotal;
+            return ['summary' => $formattedDiscountedTotal];
         } else {
             // ÜRÜN 1000TL ÜZERİNDE DEĞİLSE KUPON İNDİRİM SAĞLAMAZ
             return false;
@@ -227,7 +230,7 @@ class ModelCart extends BaseModel
     }
 
     // SİPARİŞ OLUŞTURMA
-    public function insertToOrders($userId, $totalPrice, $coupon, $summary, $bonus_product = 0)
+    public function insertToOrders($userId, $totalPrice, $coupon, $summary, $bonus_product = false)
     {
         $products = $this->getProducts();
         // eğer 3000tl üzeriyse bonus ürün kazanır
@@ -303,13 +306,14 @@ class ModelCart extends BaseModel
         }
 
         // kupon varsa gerçekleşecek işlemler
-        if ($coupon) {
+        if (isset($coupon)) {
 
             // kuponla kullanıcıyı ilişkilendir ve kupon aktifliğini pasif yap
-            $stmt = $this->db->connect->prepare('UPDATE coupons SET user_id= :user_id, status= :status');
+            $stmt = $this->db->connect->prepare('UPDATE coupons SET user_id= :user_id, status= :status WHERE title= :title');
             $continue = $stmt->execute([
                 'user_id' => $userId,
-                'status' => 'p'
+                'status' => 'p',
+                'title' => $coupon
             ]);
 
             // eğer kupon girme işlemi başarısız olursa hata ver

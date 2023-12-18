@@ -22,15 +22,15 @@ class Auth extends BaseController
 
         if (!$data['email']){
             $status = 'error';
-            $title = 'Oops!';
-            $msg = 'Please enter a valid mail';
+            $title = 'Hata!';
+            $msg = 'Lütfen geçerli bir Eposta giriniz';
             echo json_encode(['status' => $status, 'title' => $title, 'msg' => $msg]);
             exit();
         }
         if (!$data['password']){
             $status = 'error';
-            $title = 'Oops!';
-            $msg = 'Please enter a valid password';
+            $title = 'Hata!';
+            $msg = 'Lütfen geçerli bir şifre giriniz';
             echo json_encode(['status' => $status, 'title' => $title, 'msg' => $msg]);
             exit();
         }
@@ -47,8 +47,8 @@ class Auth extends BaseController
             exit();
         } else {
             $status = 'error';
-            $title = 'Oops!';
-            $msg = 'Incorrect Mail or Password, Please Try Again.';
+            $title = 'Hata!';
+            $msg = 'Hatalı Eposta veya şifre. Lütfen tekrar deneyiniz.';
             echo json_encode(['status' => $status, 'title' => $title, 'msg' => $msg]);
             exit();
         }

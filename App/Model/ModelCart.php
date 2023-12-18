@@ -306,7 +306,8 @@ class ModelCart extends BaseModel
         }
 
         // kupon varsa gerçekleşecek işlemler
-        if (isset($coupon)) {
+        if (isset($coupon) && $coupon) {
+
 
             // kuponla kullanıcıyı ilişkilendir ve kupon aktifliğini pasif yap
             $stmt = $this->db->connect->prepare('UPDATE coupons SET user_id= :user_id, status= :status WHERE title= :title');

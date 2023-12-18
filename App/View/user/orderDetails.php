@@ -180,7 +180,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     </button>
                                 </div>
                                 <div class="col-6">
-                                    <a href="<?= _link('user/orders/details/print/8') ?>" rel="noopener" target="#"
+                                    <a href="<?= _link('user/orders/details/print/').$data['details'][0]['order_id'] ?>" rel="noopener" target="#"
                                        class="btn btn-default float-right"><i class="fas fa-print"></i> Yazdır</a>
                                 </div>
                             </div>

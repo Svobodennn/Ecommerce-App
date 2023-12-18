@@ -81,60 +81,98 @@ class ModelUser extends BaseModel
     }
     public function getOrderDetails($order_id){
         $id = _session('id');
-        $result = $this->db->query("
-            SELECT
-                o.id AS order_id,
-                o.title AS order_title,
-                o.created_date,
-                o.status,
-                o.summary,
-                o.coupon,
-                o.total,
-                o.bonus_product,
-                GROUP_CONCAT(
-                    JSON_OBJECT(
-                        'product_id', p.id,
-                        'product_title', p.title,
-                        'product_description', p.description,
-                        'category_title', c.title,
-                        'origin_title', o2.title,
-                        'flavor_notes', fn.flavor_notes,
-                        'roast_level_title', r.title,
-                        'quantity', po.quantity,
-                        'product_total', po.quantity * p.price
-                    )
-                ) AS products
-            FROM
-                orders o
-            JOIN
-                product_orders po ON o.id = po.order_id
-            JOIN
-                products p ON po.product_id = p.id
-            JOIN
-                categories c ON p.category_id = c.id
-            LEFT JOIN
-                origins o2 ON p.origin_id = o2.id
-            LEFT JOIN
-                roast_levels r ON p.roast_level = r.id
-            LEFT JOIN (
-                SELECT
-                    pfn.product_id,
-                    GROUP_CONCAT(DISTINCT f.title) AS flavor_notes
-                FROM
-                    product_flavor_notes pfn
-                JOIN
-                    flavor_notes f ON pfn.flavor_note_id = f.id
-                GROUP BY
-                    pfn.product_id
-            ) fn ON p.id = fn.product_id
-            WHERE
-                o.id = $order_id
-                AND o.user_id = $id
-            GROUP BY
-                o.id;
+        $result = $this->db->query("SELECT
+    o.id AS order_id,
+    o.title AS order_title,
+    o.created_date,
+    o.status,
+    o.summary,
+    o.coupon,
+    o.total,
+    GROUP_CONCAT(
+        DISTINCT JSON_OBJECT(
+            'product_id', p_bonus.id,
+            'product_title', p_bonus.title,
+            'product_description', p_bonus.description,
+            'category_title', c_bonus.title,
+            'origin_title', o2_bonus.title,
+            'flavor_notes', fn_bonus.flavor_notes,
+            'roast_level_title', r_bonus.title
+        )
+    ) AS bonus_product,
+    GROUP_CONCAT(
+        DISTINCT JSON_OBJECT(
+            'product_id', p.id,
+            'product_title', p.title,
+            'product_description', p.description,
+            'category_title', c.title,
+            'origin_title', o2.title,
+            'flavor_notes', fn.flavor_notes,
+            'roast_level_title', r.title,
+            'quantity', po.quantity,
+            'product_total', po.quantity * p.price
+        )
+    ) AS products
+FROM
+    orders o
+JOIN
+    product_orders po ON o.id = po.order_id
+JOIN
+    products p ON po.product_id = p.id
+JOIN
+    categories c ON p.category_id = c.id
+LEFT JOIN
+    origins o2 ON p.origin_id = o2.id
+LEFT JOIN
+    roast_levels r ON p.roast_level = r.id
+LEFT JOIN (
+    SELECT
+        pfn.product_id,
+        GROUP_CONCAT(DISTINCT f.title) AS flavor_notes
+    FROM
+        product_flavor_notes pfn
+    JOIN
+        flavor_notes f ON pfn.flavor_note_id = f.id
+    GROUP BY
+        pfn.product_id
+) fn ON p.id = fn.product_id
+
+-- bonus ürün için
+LEFT JOIN
+    products p_bonus ON o.bonus_product = p_bonus.id
+LEFT JOIN
+    categories c_bonus ON p_bonus.category_id = c_bonus.id
+LEFT JOIN
+    origins o2_bonus ON p_bonus.origin_id = o2_bonus.id
+LEFT JOIN
+    roast_levels r_bonus ON p_bonus.roast_level = r_bonus.id
+LEFT JOIN (
+    SELECT
+        pfn.product_id,
+        GROUP_CONCAT(DISTINCT f.title) AS flavor_notes
+    FROM
+        product_flavor_notes pfn
+    JOIN
+        flavor_notes f ON pfn.flavor_note_id = f.id
+    GROUP BY
+        pfn.product_id
+) fn_bonus ON p_bonus.id = fn_bonus.product_id
+
+WHERE
+    o.id = $order_id
+    AND o.user_id = $id
+GROUP BY
+    o.id;
+
 ", TRUE);
 
+        // eğer sessiondaki user id ile orderın sahibi eşleşmezse anasayfaya döner
+        if (!$result){
+            return false;
+        }
+
         // siparişe göre ürünleri gruplamak için sql json özelliğini kullandık.
+
 
         foreach ($result as $key => $value){
             // her bir siparişin ürünlerini alıyoruz
@@ -147,8 +185,29 @@ class ModelUser extends BaseModel
             $result[$key]['products'] = [];
             $result[$key]['products'] = array_merge($result[$key]['products'] + $productArray);
 
+
+
         }
 
+        // eğer bonus ürün varsa json stringini arraye dönüştür
+        if (isset($result[0]['bonus_product'])){
+            // bonus ürün stringimizi alıyoruz
+            $bonusProductString = $result[0]['bonus_product'];
+
+            // json stringini alıp array'e dönüştürüyoruz
+            $bonusProductArray = json_decode('[' . $bonusProductString . ']', true);
+
+            // products kısmını boşaltıp içine ürün arraylerimizi koyuyoruz
+            $result[0]['bonus_product'] = [];
+            $result[0]['bonus_product'] = array_merge($result[0]['bonus_product'] + $bonusProductArray);
+
+            if (!isset($result[0]['bonus_product'][0]['product_id'])){
+                $result[0]['bonus_product'] = NULL;
+            }
+        } else{
+            // bonus ürün yoksa sütuna null ata
+            $result[0]['bonus_product'] = NULL;
+        }
 
         return $result;
     }

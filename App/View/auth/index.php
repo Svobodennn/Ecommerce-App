@@ -52,7 +52,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="row">
                     <!-- /.col -->
                     <div class="col-12">
-                        <button type="button" onclick="login(e)" id="loginBtn" class="btn btn-primary btn-block">Giriş
+                        <button type="button" onclick="login()" id="loginBtn" class="btn btn-primary btn-block">Giriş
                             yap
                         </button>
                     </div>
@@ -201,8 +201,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 if (res.data.redirect) {
                     let timerInterval;
                     Swal.fire({
-                        title: res.title,
-                        html: res.msg,
+                        title: res.data.title,
+                        html: res.data.msg,
                         icon: 'success',
                         showConfirmButton: false,
                         timer: 3000,
@@ -218,7 +218,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         }
                     }).then((result) => {
                         if (result.dismiss === Swal.DismissReason.timer) {
-                            window.location.href = res.redirect
+                            window.location.href = res.data.redirect
                         }
                     });
 
@@ -229,7 +229,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         res.data.msg,
                         res.data.status
                     )
-                })
+                }
             }).catch(err => {
             console.log(err)
         })

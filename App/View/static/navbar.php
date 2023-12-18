@@ -68,7 +68,7 @@
         ?>
         <li class="nav-item">
             <a class="nav-link" href="<?= _link('logout') ?>">
-                <i class="fa fa-sign-out-alt"></i> Log Out
+                <i class="fa fa-sign-out-alt"></i> Çıkış Yap
             </a>
         </li>
     </ul>
